@@ -43,6 +43,9 @@
                     <a class="nav-link me-3" href="/">Add Data</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link me-3" href="/lahan.php">Lahan</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link me-3 active" href="/history.php">History</a>
                 </li>
             </ul>
@@ -69,6 +72,7 @@
                     <th>µ Lahan</th>
                     <th>µ Air</th>
                     <th>Output</th>
+                    <th>Created At</th>
                     <th>Delete</th>
                 </tr>
             </thead>
@@ -77,6 +81,8 @@
                 $result = mysqli_query($koneksi, "SELECT * FROM history");
                 $index = 1;
                 while($data = mysqli_fetch_object($result)){
+                    $resultLahan = mysqli_query($koneksi, "SELECT * FROM lahan");
+                    while($lahans = mysqli_fetch_object($resultLahan)){
                     $u_lahan = 0;
                     $lahan_kecil_c = 25;
                     $lahan_kecil_d = 58;
@@ -112,21 +118,21 @@
                     );
                     $output_rulebase = array(0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-                    if($data->luas_lahan <= 30){
+                    if($lahans->luas_lahan <= 30){
                         $fuzzy_lahan = "Kecil";
-                        $u_lahan = ($lahan_kecil_d - $data->luas_lahan)/($lahan_kecil_d - $lahan_kecil_c);
+                        $u_lahan = ($lahan_kecil_d - $lahans->luas_lahan)/($lahan_kecil_d - $lahan_kecil_c);
                         $rulebase[0][0] = $u_lahan;
                         $rulebase[1][0] = $u_lahan;
                         $rulebase[2][0] = $u_lahan;
                     }
-                    else if($data->luas_lahan > 30 && $data->luas_lahan <= 90 ){
+                    else if($lahans->luas_lahan > 30 && $lahans->luas_lahan <= 90 ){
                         $fuzzy_lahan = "Normal";
-                        $u_lahan = ($data->luas_lahan - $lahan_sedang_a)/($lahan_sedang_b - $lahan_sedang_a);
+                        $u_lahan = ($lahans->luas_lahan - $lahan_sedang_a)/($lahan_sedang_b - $lahan_sedang_a);
                         $rulebase[3][0] = $u_lahan;
                         $rulebase[4][0] = $u_lahan;
                         $rulebase[5][0] = $u_lahan;
                     }
-                    else if($data->luas_lahan > 90){
+                    else if($lahans->luas_lahan > 90){
                         $fuzzy_lahan = "Luas";
                         $u_lahan = 0;
                         $rulebase[6][0] = $u_lahan;
@@ -189,8 +195,8 @@
                 ?>
                 <tr>
                     <td><?=$index++?></td>
-                    <td><?=$data->nama_lahan?></td>
-                    <td><?=$data->luas_lahan?></td>
+                    <td><?=$lahans->nama_lahan?></td>
+                    <td><?=$lahans->luas_lahan?></td>
                     <td><?=$data->debit_air?></td>
                     <td><?=$fuzzy_lahan?></td>
                     <td><?=$fuzzy_air?></td>
@@ -198,9 +204,10 @@
                     <td><?=$u_lahan?></td>
                     <td><?=$u_air?></td>
                     <td><?=$WA?></td>
+                    <td><?=$data->created_at?></td>
                     <td><a class="btn btn-danger" href="/index.php?delete=<?=$data->id?>">Delete</a></td>
                 </tr>
-                <?php } ?>
+                <?php }} ?>
             </tbody>
         </table>
     </div>
